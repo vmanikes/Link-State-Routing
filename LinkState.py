@@ -13,6 +13,9 @@ def close_event():
 matrix = []             # Field to store the input matrix
 neighbors_set = defaultdict(list)
 node_list = []
+distance_dict = defaultdict()
+prev_dict = defaultdict()
+
 
 def graph_neighbors(matrix):
     #This method gets the neighbors of the graph with keys as nodes and a list of values as their neighbors
@@ -30,7 +33,19 @@ def creating_node_list(matrix):
     for i in range(0,len(matrix)):
         node_list.append(i)
 
-    print(node_list)
+def dijkstra(source,matrix):
+    #Initialiazing each nodes distance to -1
+    for i in node_list:
+        distance_dict[i] = -1
+
+    #Initialiazing Source to 0
+    distance_dict[source] = 0
+
+    #Initialiazing all previous_dicr to -1
+    for i in node_list:
+        prev_dict[i] = -1
+
+    
 
 # Menu of the Link State Routing Simulator
 # Keeping it in a infinite loop; breaks only if the user enters 6
@@ -39,11 +54,12 @@ while(1):
     print("CS542 LINK STATE ROUTING SIMULATOR")
     print("----------------------------------")
     print("(1) Create a Network Topology ")
-    print("(2) Build a Connection Table")
-    print("(3) Shortest Path to Destination Router")
-    print("(4) Modify a Topology")
-    print("(5) Best Router for Broadcast")
-    print("(6) Exit")
+    print("(2) Draw Graph of Input Topology")
+    print("(3) Build a Connection Table")
+    print("(4) Shortest Path to Destination Router")
+    print("(5) Modify a Topology")
+    print("(6) Best Router for Broadcast")
+    print("(7) Exit")
     print("----------------------------------")
     print(" ")
     user_input = input("Please enter the command:")
@@ -53,33 +69,45 @@ while(1):
 
     if user_input == str(1):
 
-        G = nx.Graph()          #Initialiazing graph
         matrix = []
-        config_file = open("matrix.txt",'r')    #Opening the input file
-        for line in config_file:
-            matrix.append(line.strip("\n").split())
+        try:
+            config_file = open("matrix.txt",'r')    #Opening the input file
+            for line in config_file:
+                matrix.append(line.strip("\n").split())
 
-        path = []
-        matrix_row_length = len(matrix[0])
+            path = []
+            matrix_row_length = len(matrix[0])
 
+        except:
+            print("Please enter a valid filepath.....")
+
+        graph_neighbors(matrix)  # Creating a neighbors set
+        creating_node_list(matrix)  # Creating a list of nodes
+
+    elif user_input == str(2):
+        G = nx.Graph()  # Initialiazing graph
         fig = plt.figure()
-        timer = fig.canvas.new_timer(interval=5000)  # creating a timer object and setting an interval of 3000 milliseconds
+        timer = fig.canvas.new_timer(
+            interval=5000)  # creating a timer object and setting an interval of 3000 milliseconds
         timer.add_callback(close_event)
         for i in matrix:
             k = 0
             for j in i:
                 if int(j) > -1:
-                    G.add_edge(matrix.index(i)+1,k+1,weight=j)      #Adding edges to the graph
+                    G.add_edge(matrix.index(i) + 1, k + 1, weight=j)  # Adding edges to the graph
                 k += 1
 
-        graph_neighbors(matrix)         #Creating a neighbors set
-        creating_node_list(matrix)               #Creating a list of nodes
-        nx.draw(G,with_labels=True)     #Drawing Graph
+        nx.draw(G, with_labels=True)  # Drawing Graph
         timer.start()
-        plt.show()      #Showing the graph
+        plt.show()  # Showing the graph
+
+    elif user_input == str(3):
+        try:
+            source_input = int(input("Enter the source node:"))
+            distance,prev = dijkstra(source_input,matrix)
 
 
-    else:
-        break
+        except ValueError:
+            print("Please Enter a number")
 
 
