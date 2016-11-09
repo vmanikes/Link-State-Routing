@@ -11,24 +11,25 @@ def close_event():
 
 
 matrix = []             # Field to store the input matrix
-node_list = []
+node_list = []          # Field to hold the list of nodes
+
 
 def creating_node_list(matrix):
     #This method creates a list of nodes on which we will iterate upon
     for i in range(0,len(matrix)):
         node_list.append(i)
 
+#Method to remove the minimum element from the dictionary
 def extract_min(temp_dict):
-    min = float("inf")
+
+    min = 10000000
     lowest_key = None
-    for key in temp_dict.keys():
+    for key in temp_dict:
         if temp_dict[key] < min:
             min = temp_dict[key]
             lowest_key = key
-
-    del temp_dict[lowest_key]
+    del temp_dict[lowest_key]       #Method to remove the element from the dictionary
     return lowest_key
-
 
 def dijkstra(source,matrix):
 
@@ -36,8 +37,6 @@ def dijkstra(source,matrix):
     distance_dict = defaultdict()
     prev_dict = defaultdict()
     temp_dict = defaultdict()
-    #Dictionary to hold the graph neighbors
-    neighbors_set = defaultdict(list)
 
     #Neighbors with distances
     #This gets the neighbors of the graph with keys as nodes and a list of tuples as their neighbors, where each tuple
@@ -50,55 +49,31 @@ def dijkstra(source,matrix):
                 matrix_dict[matrix.index(i)].append((k,int(j)))
             k += 1
 
-    #Neighbors of the nodes:
-    #This gets the neighbors of the graph with keys as nodes and a list of values as their neighbors
-    #For example it will be of the form
-    #{0: [1, 3], 1: [0, 2, 4], 2: [1, 3], 3: [0, 2, 4], 4: [1, 3]})
-    for i in matrix:
-        k = 0
-        for j in i:
-            if int(j) > 0:
-                neighbors_set[matrix.index(i)].append(k)
-            k += 1
-
-
     #Initialiazing each nodes distance to -1
     for i in node_list:
-        distance_dict[i] = float("inf")
+        distance_dict[i] = 10000000
     #Initialiazing all previous_dicr to -1
     for i in node_list:
-        prev_dict[i] = float("inf")
+        prev_dict[i] = 10000000
 
     #Initialiazing Source to 0
     distance_dict[source] = 0
     for key in distance_dict.keys():
         temp_dict[key] = distance_dict[key]
 
+    while temp_dict:
 
+        lowest_key = extract_min(temp_dict)
+        for value in matrix_dict[lowest_key]:
+            temp_distance = distance_dict[lowest_key] + value[1]
+            if temp_distance < distance_dict[value[0]]:
 
+                temp_dict[value[0]] = temp_distance
+                distance_dict[value[0]] = temp_distance
+                prev_dict[value[0]] = lowest_key
 
-    #Doing this loop to add all distances from the souce to its neighbors
-    k = 0
-    for i in matrix:
-        if matrix.index(i) == source:
-            for j in i:
-                if int(j) > 0:
-                    distance_dict[k] = int(j)
-                k += 1
+    return distance_dict,prev_dict
 
-    extract_min(temp_dict)
-
-
-
-
-
-    print(distance_dict)
-
-
-    #while len(temp_nodelist) != 0:
-
-
-    
 
 # Menu of the Link State Routing Simulator
 # Keeping it in a infinite loop; breaks only if the user enters 6
