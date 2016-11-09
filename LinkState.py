@@ -11,16 +11,47 @@ def close_event():
 
 
 matrix = []             # Field to store the input matrix
-neighbors_set = defaultdict(list)
 node_list = []
 
+def creating_node_list(matrix):
+    #This method creates a list of nodes on which we will iterate upon
+    for i in range(0,len(matrix)):
+        node_list.append(i)
 
-distance_dict = defaultdict()
-prev_dict = defaultdict()
+def extract_min(temp_dict):
+    min = float("inf")
+    lowest_key = None
+    for key in temp_dict.keys():
+        if temp_dict[key] < min:
+            min = temp_dict[key]
+            lowest_key = key
+
+    del temp_dict[lowest_key]
+    return lowest_key
 
 
-def graph_neighbors(matrix):
-    #This method gets the neighbors of the graph with keys as nodes and a list of values as their neighbors
+def dijkstra(source,matrix):
+
+    matrix_dict = defaultdict(list)
+    distance_dict = defaultdict()
+    prev_dict = defaultdict()
+    temp_dict = defaultdict()
+    #Dictionary to hold the graph neighbors
+    neighbors_set = defaultdict(list)
+
+    #Neighbors with distances
+    #This gets the neighbors of the graph with keys as nodes and a list of tuples as their neighbors, where each tuple
+    #contains neighbpors and distances
+    #{0: [(1, 4), (3, 2)], 1: [(0, 4), (2, 8), (4, 5)], 2: [(1, 8), (3, 3)], 3: [(0, 2), (2, 3), (4, 4)], 4: [(1, 5), (3, 4)]}
+    for i in matrix:
+        k = 0
+        for j in i:
+            if int(j) > 0:
+                matrix_dict[matrix.index(i)].append((k,int(j)))
+            k += 1
+
+    #Neighbors of the nodes:
+    #This gets the neighbors of the graph with keys as nodes and a list of values as their neighbors
     #For example it will be of the form
     #{0: [1, 3], 1: [0, 2, 4], 2: [1, 3], 3: [0, 2, 4], 4: [1, 3]})
     for i in matrix:
@@ -30,26 +61,39 @@ def graph_neighbors(matrix):
                 neighbors_set[matrix.index(i)].append(k)
             k += 1
 
-def creating_node_list(matrix):
-    #This method creates a list of nodes on which we will iterate upon
-    for i in range(0,len(matrix)):
-        node_list.append(i)
 
-
-def dijkstra(source,matrix):
-
-    temp_nodelist = []
     #Initialiazing each nodes distance to -1
     for i in node_list:
-        distance_dict[i] = -1
+        distance_dict[i] = float("inf")
     #Initialiazing all previous_dicr to -1
     for i in node_list:
-        prev_dict[i] = -1
+        prev_dict[i] = float("inf")
 
     #Initialiazing Source to 0
     distance_dict[source] = 0
+    for key in distance_dict.keys():
+        temp_dict[key] = distance_dict[key]
 
-    temp_nodelist = node_list.copy()
+
+
+
+    #Doing this loop to add all distances from the souce to its neighbors
+    k = 0
+    for i in matrix:
+        if matrix.index(i) == source:
+            for j in i:
+                if int(j) > 0:
+                    distance_dict[k] = int(j)
+                k += 1
+
+    extract_min(temp_dict)
+
+
+
+
+
+    print(distance_dict)
+
 
     #while len(temp_nodelist) != 0:
 
@@ -90,7 +134,6 @@ while(1):
         except:
             print("Please enter a valid filepath.....")
 
-        graph_neighbors(matrix)  # Creating a neighbors set
         creating_node_list(matrix)  # Creating a list of nodes
 
     elif user_input == str(2):
@@ -113,7 +156,7 @@ while(1):
     elif user_input == str(3):
         try:
             source_input = int(input("Enter the source node:"))
-            #distance,prev = dijkstra(source_input,matrix)
+            distance,prev = dijkstra(source_input,matrix)
 
 
         except ValueError:
