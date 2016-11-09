@@ -13,6 +13,8 @@ def close_event():
 matrix = []             # Field to store the input matrix
 neighbors_set = defaultdict(list)
 node_list = []
+
+
 distance_dict = defaultdict()
 prev_dict = defaultdict()
 
@@ -33,17 +35,24 @@ def creating_node_list(matrix):
     for i in range(0,len(matrix)):
         node_list.append(i)
 
+
 def dijkstra(source,matrix):
+
+    temp_nodelist = []
     #Initialiazing each nodes distance to -1
     for i in node_list:
         distance_dict[i] = -1
+    #Initialiazing all previous_dicr to -1
+    for i in node_list:
+        prev_dict[i] = -1
 
     #Initialiazing Source to 0
     distance_dict[source] = 0
 
-    #Initialiazing all previous_dicr to -1
-    for i in node_list:
-        prev_dict[i] = -1
+    temp_nodelist = node_list.copy()
+
+    #while len(temp_nodelist) != 0:
+
 
     
 
@@ -104,7 +113,7 @@ while(1):
     elif user_input == str(3):
         try:
             source_input = int(input("Enter the source node:"))
-            distance,prev = dijkstra(source_input,matrix)
+            #distance,prev = dijkstra(source_input,matrix)
 
 
         except ValueError:
