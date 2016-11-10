@@ -22,7 +22,7 @@ def creating_node_list(matrix):
 #Method to remove the minimum element from the dictionary
 def extract_min(temp_dict):
 
-    min = 10000000
+    min = float("inf")
     lowest_key = None
     for key in temp_dict:
         if temp_dict[key] < min:
@@ -51,25 +51,29 @@ def dijkstra(source,matrix):
 
     #Initialiazing each nodes distance to -1
     for i in node_list:
-        distance_dict[i] = 10000000
+        distance_dict[i] = float("inf")
     #Initialiazing all previous_dicr to -1
     for i in node_list:
-        prev_dict[i] = 10000000
+        prev_dict[i] = float("inf")
 
     #Initialiazing Source to 0
     distance_dict[source] = 0
+
+    #Creating a temporary dictionary which will help to perform the deletion operations
     for key in distance_dict.keys():
         temp_dict[key] = distance_dict[key]
 
     while temp_dict:
+        lowest_key = extract_min(temp_dict)         #Extract the minimum element
+        for value in matrix_dict[lowest_key]:       #Iterating over the minimum element's neighbors
 
-        lowest_key = extract_min(temp_dict)
-        for value in matrix_dict[lowest_key]:
             temp_distance = distance_dict[lowest_key] + value[1]
+            #if the distance is better than what we had replace it
             if temp_distance < distance_dict[value[0]]:
 
                 temp_dict[value[0]] = temp_distance
                 distance_dict[value[0]] = temp_distance
+                #add the previous distance
                 prev_dict[value[0]] = lowest_key
 
     return distance_dict,prev_dict
