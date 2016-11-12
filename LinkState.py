@@ -16,8 +16,9 @@ node_list = []          # Field to hold the list of nodes
 
 def creating_node_list(matrix):
     #This method creates a list of nodes on which we will iterate upon
-    for i in range(0,len(matrix)):
+    for i in range(1,len(matrix)+1):
         node_list.append(i)
+
 
 #Method to remove the minimum element from the dictionary
 def extract_min(temp_dict):
@@ -43,18 +44,17 @@ def dijkstra(source,matrix):
     #contains neighbpors and distances
     #{0: [(1, 4), (3, 2)], 1: [(0, 4), (2, 8), (4, 5)], 2: [(1, 8), (3, 3)], 3: [(0, 2), (2, 3), (4, 4)], 4: [(1, 5), (3, 4)]}
     for i in matrix:
-        k = 0
+        k = 1
         for j in i:
             if int(j) > 0:
-                matrix_dict[matrix.index(i)].append((k,int(j)))
+                matrix_dict[matrix.index(i)+1].append((k,int(j)))
             k += 1
 
     #Initialiazing each nodes distance to -1
     for i in node_list:
         distance_dict[i] = float("inf")
-    #Initialiazing all previous_dicr to -1
-    for i in node_list:
-        prev_dict[i] = float("inf")
+
+    prev_dict[source] = '-'
 
     #Initialiazing Source to 0
     distance_dict[source] = 0
@@ -105,7 +105,7 @@ while(1):
         try:
             config_file = open("matrix.txt",'r')    #Opening the input file
             for line in config_file:
-                matrix.append(line.strip("\n").split())
+                matrix.append(line.strip("\n").split()) #Transforming the input file to a matrix
 
             path = []
             matrix_row_length = len(matrix[0])
@@ -134,11 +134,19 @@ while(1):
 
     elif user_input == str(3):
         try:
+            #Entering the source node and calculating the Dijkstra and shortest path to all nodes from the source
             source_input = int(input("Enter the source node:"))
             distance,prev = dijkstra(source_input,matrix)
-
+            #Using the copy of the prev for building the connection table
+            conn_previous = prev.copy()
+            print("CONNECTION TABLE")
+            print("================")
+            for key,value in conn_previous.items():
+                if value == source_input:
+                    conn_previous[key] = key
+                print(key,"\t\t",distance[key],"\t\t\t",conn_previous[key])
 
         except ValueError:
             print("Please Enter a number")
 
-
+    elif user_input == str(4):
