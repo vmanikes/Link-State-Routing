@@ -1,18 +1,13 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 from collections import defaultdict
-import matplotlib.animation as animation
-import sys
 import numpy as np
 
 
 def close_event():
     plt.close() #timer calls this function after 3 seconds and closes the window
 
-
-
 node_list = []          # Field to hold the list of nodes
-
 
 def creating_node_list(matrix):
     #This method creates a list of nodes on which we will iterate upon
@@ -79,6 +74,31 @@ def dijkstra(source,matrix):
 
     return distance_dict,prev_dict
 
+def find_path(source,dest,prev1):
+    temp = dest
+    # If the source and destination exceeds the number of nodes program breaks
+    if source > len(node_list) or dest > len(node_list):
+        exit()
+    path3 = []
+    # Appending paths from prev to the list
+    path3.append(dest)
+    while True:
+        # If source and destination are the same break
+        if source == dest:
+            break
+        if dest in prev1:
+            # Find the path and append it to the list
+            path3.append(prev1[dest])
+            dest = prev1[dest]
+
+            if dest == source:
+                return path3
+                break
+
+        else:
+            path3.append(source)
+            break
+
 
 # Menu of the Link State Routing Simulator
 # Keeping it in a infinite loop; breaks only if the user enters 6
@@ -90,10 +110,9 @@ while(1):
     print("(2) Draw Graph of Input Topology")
     print("(3) Build a Connection Table")
     print("(4) Shortest Path to Destination Router")
-    print("(5) Add a Router")
-    print("(6) Remove a Router")
-    print("(7) Best Router for Broadcast")
-    print("(8) Exit")
+    print("(5) Remove a Router")
+    print("(6) Best Router for Broadcast")
+    print("(7) Exit")
     print("----------------------------------")
     print(" ")
     user_input = input("Please enter the command:")
@@ -171,25 +190,24 @@ while(1):
                 if path_source == path_dest:
                     break
                 if path_dest in prev:
-
+                    # Find the path and append it to the list
                     path.append(prev[path_dest])
                     path_dest = prev[path_dest]
 
                     if path_dest == path_source:
+                        print("The shortest path from router ", path_source, " to router ", temp, "is ", path[::-1],
+                              "with the cost of ", distance[temp])
                         break
+                else:
+                    print("No valid shortest path exists")
+                    path.append(0)
+                    break
 
-            print("The shortest path from router ",path_source," to router ",temp,"is ",path[::-1],"with the cost of ",distance[temp])
+
         except Exception:
             print("Please Enter a valid node within the range 1,", len(node_list))
 
     elif user_input == str(5):
-
-        print("Select the router from the range 1",len(node_list))
-        add_router = int(input("Enter the source Router you wish to find the path:"))
-
-
-
-    elif user_input == str(6):
         # Code block to remove a router from the matrix
         print(("Select the router from the range 1", len(node_list)))
         remove_router = int(input("Enter the Router you want to remove:"))
@@ -212,8 +230,41 @@ while(1):
         matrix = matrix.tolist()
 
 
-    elif user_input == str(7):
-        broadcast_path = defaultdict(list)
-        for i in range(len(node_list),0,1):
-            broadcast_path[i].append(i)
+    elif user_input == str(6):
+        #Selecting the best node for broadcasting, in this we will select the node which has max path to all the other
+        # nodes in the graph and return it
+        broadcast_path_dict = defaultdict(list)
+        broadcast_path = []
 
+        #This block of code will calculate all the paths and adds them to a default dict of list where key is the source
+        # and value is the list of paths
+        #1: [[2, 4, 1], [3, 1], [4, 1], [5, 4, 1]], 4: [[5, 4]]
+        for i in range(1,len(node_list)+1):
+            for j in range(1,len(node_list)+1):
+                if i < j:
+                    dum_path = find_path(i,j,prev)
+                    if dum_path != None:
+                        broadcast_path_dict[i].append(dum_path)
+
+        #This loop calculate the length of the longest list in the value of the dictionary
+        #For example key 1 has a longest list of length 3 (2,4,1)
+        max = 0
+        for key,value in broadcast_path_dict.items():
+            for i in value:
+                if len(i) > max:
+                    max = len(i)
+        # gathering all the nodes which have the following max length and selecting them as broadcast nodes
+        for key,value in broadcast_path_dict.items():
+
+            for i in value:
+                if len(i) == max:
+                    broadcast_path.append(key)
+
+        broadcast_path = set(broadcast_path)
+        print(broadcast_path_dict)
+        print("The best Router's to do broadcast is ",broadcast_path)
+
+    else:
+        #Exiting the program
+        print("Exit CS542-04 2016 Fall project. Good Bye!")
+        exit()
