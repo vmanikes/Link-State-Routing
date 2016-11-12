@@ -146,7 +146,38 @@ while(1):
                     conn_previous[key] = key
                 print(key,"\t\t",distance[key],"\t\t\t",conn_previous[key])
 
+            #Some exceptions to handle the faulty inputs from the user
+        except Exception:
+            print("Please Enter a valid node within the range 1,",len(node_list))
         except ValueError:
             print("Please Enter a number")
 
     elif user_input == str(4):
+        try:
+            #Entering the placeholders for the source and destination to find the path from
+            print("Select nodes from the range 1,",len(node_list))
+            path_source = int(input("Enter the source node you wish to find the path:"))
+            path_dest = int(input("Enter the Destination node you wish to find the path:"))
+
+            temp = path_dest
+            #If the source and destination exceeds the number of nodes program breaks
+            if path_source > len(node_list) or path_dest > len(node_list):
+                break
+            path = []
+            #Appending paths from prev to the list
+            path.append(path_dest)
+            while True:
+                #If source and destination are the same break
+                if path_source == path_dest:
+                    break
+                if path_dest in prev:
+
+                    path.append(prev[path_dest])
+                    path_dest = prev[path_dest]
+
+                    if path_dest == path_source:
+                        break
+
+            print("The shortest path from router ",path_source," to router ",temp,"is ",path[::-1],"with the cost of ",distance[temp])
+        except Exception:
+            print("Please Enter a valid node within the range 1,", len(node_list))
