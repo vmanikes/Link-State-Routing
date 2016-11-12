@@ -10,12 +10,13 @@ def close_event():
     plt.close() #timer calls this function after 3 seconds and closes the window
 
 
-matrix = []             # Field to store the input matrix
+
 node_list = []          # Field to hold the list of nodes
 
 
 def creating_node_list(matrix):
     #This method creates a list of nodes on which we will iterate upon
+    matrix = np.array(matrix)
     for i in range(1,len(matrix)+1):
         node_list.append(i)
 
@@ -89,9 +90,10 @@ while(1):
     print("(2) Draw Graph of Input Topology")
     print("(3) Build a Connection Table")
     print("(4) Shortest Path to Destination Router")
-    print("(5) Modify a Topology")
-    print("(6) Best Router for Broadcast")
-    print("(7) Exit")
+    print("(5) Add a Router")
+    print("(6) Remove a Router")
+    print("(7) Best Router for Broadcast")
+    print("(8) Exit")
     print("----------------------------------")
     print(" ")
     user_input = input("Please enter the command:")
@@ -100,14 +102,12 @@ while(1):
 #TODO Making user input the file1
 
     if user_input == str(1):
-
-        matrix = []
+        matrix = []  # Field to store the input matrix
         try:
             config_file = open("matrix.txt",'r')    #Opening the input file
             for line in config_file:
                 matrix.append(line.strip("\n").split()) #Transforming the input file to a matrix
 
-            path = []
             matrix_row_length = len(matrix[0])
 
         except:
@@ -135,7 +135,7 @@ while(1):
     elif user_input == str(3):
         try:
             #Entering the source node and calculating the Dijkstra and shortest path to all nodes from the source
-            source_input = int(input("Enter the source node:"))
+            source_input = int(input("Enter the source Router:"))
             distance,prev = dijkstra(source_input,matrix)
             #Using the copy of the prev for building the connection table
             conn_previous = prev.copy()
@@ -148,16 +148,16 @@ while(1):
 
             #Some exceptions to handle the faulty inputs from the user
         except Exception:
-            print("Please Enter a valid node within the range 1,",len(node_list))
+            print("Please Enter a valid Router within the range 1,",len(node_list))
         except ValueError:
             print("Please Enter a number")
 
     elif user_input == str(4):
         try:
             #Entering the placeholders for the source and destination to find the path from
-            print("Select nodes from the range 1,",len(node_list))
-            path_source = int(input("Enter the source node you wish to find the path:"))
-            path_dest = int(input("Enter the Destination node you wish to find the path:"))
+            print("Select Router from the range 1,",len(node_list))
+            path_source = int(input("Enter the source Router you wish to find the path:"))
+            path_dest = int(input("Enter the Destination Router you wish to find the path:"))
 
             temp = path_dest
             #If the source and destination exceeds the number of nodes program breaks
@@ -181,3 +181,39 @@ while(1):
             print("The shortest path from router ",path_source," to router ",temp,"is ",path[::-1],"with the cost of ",distance[temp])
         except Exception:
             print("Please Enter a valid node within the range 1,", len(node_list))
+
+    elif user_input == str(5):
+
+        print("Select the router from the range 1",len(node_list))
+        add_router = int(input("Enter the source Router you wish to find the path:"))
+
+
+
+    elif user_input == str(6):
+        # Code block to remove a router from the matrix
+        print(("Select the router from the range 1", len(node_list)))
+        remove_router = int(input("Enter the Router you want to remove:"))
+        matrix = np.array(matrix)
+        # Removing the row and column specific to the input given
+        matrix = np.delete( matrix, remove_router-1, 0)
+        matrix = np.delete( matrix, remove_router-1, 1)
+
+        print("\nThe updated Router Topology is:")
+        print("=================================")
+        print(matrix)
+        node_list.clear()
+
+        #Updating the nodelist
+        for i in range(1,len(matrix)+1):
+            node_list.append(i)
+
+        print("\nThe list of Routers are:")
+        print(node_list)
+        matrix = matrix.tolist()
+
+
+    elif user_input == str(7):
+        broadcast_path = defaultdict(list)
+        for i in range(len(node_list),0,1):
+            broadcast_path[i].append(i)
+
