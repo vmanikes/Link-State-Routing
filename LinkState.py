@@ -1,7 +1,10 @@
-import matplotlib.pyplot as plt
-import networkx as nx
-from collections import defaultdict
-import numpy as np
+
+
+# Imports required for the program to process
+import matplotlib.pyplot as plt         #Plotting Library
+import networkx as nx                   #Efficient library to do networks
+from collections import defaultdict     #Dictionary datastructure
+import numpy as np                      #Efficient arrays
 
 
 def close_event():
@@ -9,8 +12,8 @@ def close_event():
 
 node_list = []          # Field to hold the list of nodes
 
+#This method creates a list of nodes on which we will iterate upon
 def creating_node_list(matrix):
-    #This method creates a list of nodes on which we will iterate upon
     matrix = np.array(matrix)
     for i in range(1,len(matrix)+1):
         node_list.append(i)
@@ -19,8 +22,9 @@ def creating_node_list(matrix):
 #Method to remove the minimum element from the dictionary
 def extract_min(temp_dict):
 
-    min = float("inf")
+    min = float("inf")      #Declaring the minimum element to be infinity at first
     lowest_key = None
+    #This loop will find the minimum element from the dictionary
     for key in temp_dict:
         if temp_dict[key] < min:
             min = temp_dict[key]
@@ -253,9 +257,9 @@ while(1):
             for i in value:
                 if len(i) > max:
                     max = len(i)
+
         # gathering all the nodes which have the following max length and selecting them as broadcast nodes
         for key,value in broadcast_path_dict.items():
-
             for i in value:
                 if len(i) == max:
                     broadcast_path.append(key)
