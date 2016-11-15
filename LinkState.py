@@ -32,11 +32,13 @@ def extract_min(temp_dict):
     del temp_dict[lowest_key]       #Method to remove the element from the dictionary
     return lowest_key
 
+
+#Method to implement the Dijkstra Algorithm
 def dijkstra(source,matrix):
 
     matrix_dict = defaultdict(list)
-    distance_dict = defaultdict()
-    prev_dict = defaultdict()
+    distance_dict = defaultdict()       #Var to store the distances
+    prev_dict = defaultdict()           #Var to store the predecessors
     temp_dict = defaultdict()
 
     #Neighbors with distances
@@ -265,7 +267,6 @@ while(1):
                     broadcast_path.append(key)
 
         broadcast_path = set(broadcast_path)
-        print(broadcast_path_dict)
         print("The best Router's to do broadcast is ",broadcast_path)
 
     else:
