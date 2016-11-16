@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt         #Plotting Library
 import networkx as nx                   #Efficient library to do networks
 from collections import defaultdict     #Dictionary datastructure
 import numpy as np                      #Efficient arrays
+import sys                              #To get the command Line args
 
 
 def close_event():
@@ -77,7 +78,7 @@ def dijkstra(source,matrix):
                 distance_dict[value[0]] = temp_distance
                 #add the previous distance
                 prev_dict[value[0]] = lowest_key
-
+    print(distance_dict)
     return distance_dict,prev_dict
 
 def find_path(source,dest,prev1):
@@ -129,7 +130,7 @@ while(1):
     if user_input == str(1):
         matrix = []  # Field to store the input matrix
         try:
-            config_file = open("matrix.txt",'r')    #Opening the input file
+            config_file = open(str(sys.argv[1]),'r')    #Opening the input file
             for line in config_file:
                 matrix.append(line.strip("\n").split()) #Transforming the input file to a matrix
 
@@ -166,9 +167,11 @@ while(1):
             conn_previous = prev.copy()
             print("CONNECTION TABLE")
             print("================")
+            print("Routers \tWeights \t\tInterface")
             for key,value in conn_previous.items():
                 if value == source_input:
                     conn_previous[key] = key
+
                 print(key,"\t\t",distance[key],"\t\t\t",conn_previous[key])
 
             #Some exceptions to handle the faulty inputs from the user
@@ -180,7 +183,7 @@ while(1):
     elif user_input == str(4):
         try:
             #Entering the placeholders for the source and destination to find the path from
-            print("Select Router from the range 1,",len(node_list))
+            print("Select Router from the range 1,%d" %len(node_list))
             path_source = int(input("Enter the source Router you wish to find the path:"))
             path_dest = int(input("Enter the Destination Router you wish to find the path:"))
 
