@@ -12,7 +12,7 @@ def close_event():
     plt.close() #timer calls this function after 3 seconds and closes the window
 
 node_list = []          # Field to hold the list of nodes
-
+matrix = []  # Field to store the input matrix
 #This method creates a list of nodes on which we will iterate upon
 def creating_node_list(matrix):
     matrix = np.array(matrix)
@@ -118,8 +118,9 @@ while(1):
     print("(3) Build a Connection Table")
     print("(4) Shortest Path to Destination Router")
     print("(5) Remove a Router")
-    print("(6) Best Router for Broadcast")
-    print("(7) Exit")
+    print("(6) Router which will cover the most other Routers")
+    print("(7) Best Router for Broadcast")
+    print("(8) Exit")
     print("----------------------------------")
     print(" ")
     user_input = input("Please enter the command:")
@@ -128,7 +129,7 @@ while(1):
 #TODO Making user input the file1
 
     if user_input == str(1):
-        matrix = []  # Field to store the input matrix
+
         try:
             config_file = open(str(sys.argv[1]),'r')    #Opening the input file
             for line in config_file:
@@ -142,6 +143,9 @@ while(1):
         creating_node_list(matrix)  # Creating a list of nodes
 
     elif user_input == str(2):
+        if len(matrix) == 0:
+            print("Enter option 1 to build the topology first")
+            break
         G = nx.Graph()  # Initialiazing graph
         fig = plt.figure()
         timer = fig.canvas.new_timer(
@@ -159,6 +163,9 @@ while(1):
         plt.show()  # Showing the graph
 
     elif user_input == str(3):
+        if len(matrix) == 0:
+            print("Enter option 1 to build the topology first")
+            break
         try:
             #Entering the source node and calculating the Dijkstra and shortest path to all nodes from the source
             source_input = int(input("Enter the source Router:"))
@@ -181,6 +188,9 @@ while(1):
             print("Please Enter a number")
 
     elif user_input == str(4):
+        if len(matrix) == 0:
+            print("Enter option 1 to build the topology first")
+            break
         try:
             #Entering the placeholders for the source and destination to find the path from
             print("Select Router from the range 1,%d" %len(node_list))
@@ -217,6 +227,9 @@ while(1):
             print("Please Enter a valid node within the range 1,", len(node_list))
 
     elif user_input == str(5):
+        if len(matrix) == 0:
+            print("Enter option 1 to build the topology first")
+            break
         # Code block to remove a router from the matrix
         print(("Select the router from the range 1", len(node_list)))
         remove_router = int(input("Enter the Router you want to remove:"))
@@ -240,7 +253,10 @@ while(1):
 
 
     elif user_input == str(6):
-        #Selecting the best node for broadcasting, in this we will select the node which has max path to all the other
+        if len(matrix) == 0:
+            print("Enter option 1 to build the topology first")
+            break
+        #Selecting the best node, in this we will select the node which has max path to all the other
         # nodes in the graph and return it
         broadcast_path_dict = defaultdict(list)
         broadcast_path = []
@@ -270,7 +286,27 @@ while(1):
                     broadcast_path.append(key)
 
         broadcast_path = set(broadcast_path)
-        print("The best Router's to do broadcast is ",broadcast_path)
+        print("Router which will cover the most other Routers ",broadcast_path)
+
+    elif user_input == str(7):
+        if len(matrix) == 0:
+            print("Enter option 1 to build the topology first")
+            break
+
+        s_path_dict = defaultdict(list)
+        s_path = {}
+        #Block to find shortest paths by taking all nodes as sources and storing them in a dict
+        for i in range(1,len(node_list)+1):
+            dis1,prev1 = dijkstra(i,matrix)
+            s_path_dict[i] = dis1.values()
+
+        #Summing all the values corresponding to the key
+        for key,value in s_path_dict.items():
+            s_path[key] = sum(list(value))
+
+        key = sorted(s_path.items(),key = lambda x:x[1])
+
+        print("Best Router for broadcast is ",key[0][0])
 
     else:
         #Exiting the program
